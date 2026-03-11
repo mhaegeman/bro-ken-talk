@@ -10,7 +10,7 @@ from datetime import date
 import anthropic
 import streamlit as st
 
-from recap import SYSTEM_PROMPT, USER_PROMPT
+from recap import SYSTEM_PROMPT, USER_PROMPT, load_cached, save_cached, list_cached_dates
 
 st.set_page_config(page_title="bro-ken-talk 🍺", page_icon="🍺", layout="centered")
 st.title("🍺 bro-ken-talk")
@@ -26,6 +26,22 @@ if not api_key:
     st.stop()
 
 client = anthropic.Anthropic(api_key=api_key)
+
+today_key = date.today().isoformat()
+
+# Sidebar: history browser
+with st.sidebar:
+    st.header("📅 History")
+    cached_dates = list_cached_dates()
+    if cached_dates:
+        selected = st.selectbox(
+            "View a past day",
+            cached_dates,
+            format_func=lambda d: f"{d} (today)" if d == today_key else d,
+        )
+    else:
+        selected = None
+        st.caption("No history yet — fetch today's recap first!")
 
 
 def generate_recap():
@@ -57,6 +73,19 @@ def generate_recap():
                 yield event.delta.text
 
 
-if st.button("Get today's bro news 🍺", type="primary"):
-    with st.spinner("Searching the web... (~30 seconds)"):
-        st.write_stream(generate_recap())
+# Main area
+if selected and selected != today_key:
+    # Viewing a historical day
+    st.subheader(f"Recap for {selected}")
+    st.markdown(load_cached(selected))
+else:
+    # Today's view
+    cached_today = load_cached(today_key)
+    if st.button("Get today's bro news 🍺", type="primary"):
+        if cached_today:
+            st.info("Showing cached results from earlier today — no API call needed.")
+            st.markdown(cached_today)
+        else:
+            with st.spinner("Searching the web... (~30 seconds)"):
+                result = st.write_stream(generate_recap())
+            save_cached(today_key, result)

@@ -5,9 +5,37 @@ Searches the web for sports, entertainment, drinks, and trending topics
 that your male colleagues in Copenhagen are buzzing about.
 """
 
+import json
 import os
 import sys
+from pathlib import Path
+
 import anthropic
+
+_CACHE_FILE = Path(__file__).parent / "cache.json"
+
+
+def _load_cache() -> dict:
+    if _CACHE_FILE.exists():
+        return json.loads(_CACHE_FILE.read_text())
+    return {}
+
+
+def load_cached(date_key: str) -> str | None:
+    """Return cached recap text for YYYY-MM-DD, or None."""
+    return _load_cache().get(date_key)
+
+
+def save_cached(date_key: str, text: str):
+    """Append/update date_key in cache.json (all history preserved)."""
+    data = _load_cache()
+    data[date_key] = text
+    _CACHE_FILE.write_text(json.dumps(data, indent=2))
+
+
+def list_cached_dates() -> list:
+    """Return all cached dates sorted newest-first."""
+    return sorted(_load_cache().keys(), reverse=True)
 
 SYSTEM_PROMPT = """You are a brilliant, witty friend helping a woman catch up on what her male
 colleagues in Copenhagen are talking about. She needs to be able to hold her own in office
@@ -61,6 +89,13 @@ def main():
 
     from datetime import date
     today = date.today().strftime("%B %d, %Y")
+    today_key = date.today().isoformat()
+
+    cached = load_cached(today_key)
+    if cached:
+        print("(Serving cached result for today)\n")
+        print(cached)
+        return
 
     client = anthropic.Anthropic(api_key=api_key)
 
@@ -100,8 +135,11 @@ def main():
     print(f"  {today}")
     print("=" * 60)
     print()
-    print("\n".join(output_parts))
+    full_text = "\n".join(output_parts)
+    print(full_text)
     print()
+
+    save_cached(today_key, full_text)
 
     # Show search count if available
     searches_used = getattr(
