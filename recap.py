@@ -13,6 +13,20 @@ from pathlib import Path
 import anthropic
 
 _CACHE_FILE = Path(__file__).parent / "cache.json"
+DEFAULT_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+WEB_SEARCH_BETA = "web-search-2025-03-05"
+WEB_SEARCH_TOOL = {
+    "type": "web_search_20250305",
+    "name": "web_search",
+    "max_uses": 12,
+    "user_location": {
+        "type": "approximate",
+        "city": "Copenhagen",
+        "region": "Capital Region",
+        "country": "DK",
+        "timezone": "Europe/Copenhagen",
+    },
+}
 
 
 def _load_cache() -> dict:
@@ -102,25 +116,15 @@ def main():
     print("🍺 Fetching today's bro news... (this takes ~30 seconds)\n")
 
     response = client.messages.create(
-        model="claude-opus-4-6",
+        model=DEFAULT_MODEL,
         max_tokens=4096,
         system=SYSTEM_PROMPT,
+        betas=[WEB_SEARCH_BETA],
         messages=[{
             "role": "user",
             "content": USER_PROMPT.format(today=today)
         }],
-        tools=[{
-            "type": "web_search_20260209",
-            "name": "web_search",
-            "max_uses": 12,
-            "user_location": {
-                "type": "approximate",
-                "city": "Copenhagen",
-                "region": "Capital Region",
-                "country": "DK",
-                "timezone": "Europe/Copenhagen"
-            }
-        }]
+        tools=[WEB_SEARCH_TOOL],
     )
 
     # Extract only the final text output — skip internal tool use blocks

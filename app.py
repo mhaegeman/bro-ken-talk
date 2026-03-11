@@ -10,7 +10,16 @@ from datetime import date
 import anthropic
 import streamlit as st
 
-from recap import SYSTEM_PROMPT, USER_PROMPT, load_cached, save_cached, list_cached_dates
+from recap import (
+    DEFAULT_MODEL,
+    SYSTEM_PROMPT,
+    USER_PROMPT,
+    WEB_SEARCH_BETA,
+    WEB_SEARCH_TOOL,
+    load_cached,
+    save_cached,
+    list_cached_dates,
+)
 
 st.set_page_config(page_title="bro-ken-talk 🍺", page_icon="🍺", layout="centered")
 st.title("🍺 bro-ken-talk")
@@ -48,22 +57,12 @@ def generate_recap():
     """Generator that streams text chunks from Claude as they arrive."""
     today = date.today().strftime("%B %d, %Y")
     with client.messages.stream(
-        model="claude-opus-4-6",
+        model=DEFAULT_MODEL,
         max_tokens=4096,
         system=SYSTEM_PROMPT,
+        betas=[WEB_SEARCH_BETA],
         messages=[{"role": "user", "content": USER_PROMPT.format(today=today)}],
-        tools=[{
-            "type": "web_search_20260209",
-            "name": "web_search",
-            "max_uses": 12,
-            "user_location": {
-                "type": "approximate",
-                "city": "Copenhagen",
-                "region": "Capital Region",
-                "country": "DK",
-                "timezone": "Europe/Copenhagen"
-            }
-        }]
+        tools=[WEB_SEARCH_TOOL],
     ) as stream:
         for event in stream:
             if (
