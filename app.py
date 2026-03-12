@@ -60,7 +60,7 @@ def generate_recap():
         model=DEFAULT_MODEL,
         max_tokens=1500,
         system=SYSTEM_PROMPT,
-        betas=[WEB_SEARCH_BETA],
+        extra_headers={"anthropic-beta": WEB_SEARCH_BETA},
         messages=[{"role": "user", "content": USER_PROMPT.format(today=today)}],
         tools=[WEB_SEARCH_TOOL],
     ) as stream:

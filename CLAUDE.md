@@ -30,8 +30,9 @@ python recap.py        # CLI — prints recap to stdout
 - **max_tokens**: keep ≤ 1500. Output is ~20 short conversational lines (~500 tokens).
 - **max_uses** (web searches): keep ≤ 5 in `WEB_SEARCH_TOOL`. One search per content category
   (Sports, Entertainment, Drinks, Trending, Wildcard) is sufficient.
-- **Beta header**: `betas=[WEB_SEARCH_BETA]` is required on every API call that uses the
-  `web_search_20250305` tool type. Omitting it causes a 400 BadRequestError.
+- **Beta header**: `extra_headers={"anthropic-beta": WEB_SEARCH_BETA}` is required on every
+  API call using `web_search_20250305`. Do not use `betas=[...]` — `stream()` rejects it in
+  SDK 0.84.0 with a TypeError. `extra_headers` works for both `create()` and `stream()`.
 - **Prompts**: do not extend `SYSTEM_PROMPT` or `USER_PROMPT` — longer prompts mean more input
   tokens billed on every single call.
 
