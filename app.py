@@ -58,7 +58,7 @@ def generate_recap():
     today = date.today().strftime("%B %d, %Y")
     with client.messages.stream(
         model=DEFAULT_MODEL,
-        max_tokens=4096,
+        max_tokens=1500,
         system=SYSTEM_PROMPT,
         betas=[WEB_SEARCH_BETA],
         messages=[{"role": "user", "content": USER_PROMPT.format(today=today)}],

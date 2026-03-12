@@ -18,7 +18,7 @@ WEB_SEARCH_BETA = "web-search-2025-03-05"
 WEB_SEARCH_TOOL = {
     "type": "web_search_20250305",
     "name": "web_search",
-    "max_uses": 12,
+    "max_uses": 5,
     "user_location": {
         "type": "approximate",
         "city": "Copenhagen",
@@ -117,7 +117,7 @@ def main():
 
     response = client.messages.create(
         model=DEFAULT_MODEL,
-        max_tokens=4096,
+        max_tokens=1500,
         system=SYSTEM_PROMPT,
         betas=[WEB_SEARCH_BETA],
         messages=[{
