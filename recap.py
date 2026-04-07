@@ -51,25 +51,17 @@ def list_cached_dates() -> list:
     """Return all cached dates sorted newest-first."""
     return sorted(_load_cache().keys(), reverse=True)
 
-SYSTEM_PROMPT = """You are a brilliant, witty friend helping a woman catch up on what her male
-colleagues in Copenhagen are talking about. She needs to be able to hold her own in office
-small talk about sports, entertainment, drinks, and trending bro culture topics.
+SYSTEM_PROMPT = """You help a woman catch up on what her male colleagues in Copenhagen are talking about so she can hold her own in office small talk.
 
-Your job is to give her ready-to-use conversation starters — NOT a boring news ticker.
-Every single item should be phrased as something she can actually say out loud at the coffee
-machine or in a meeting, e.g.:
-- "Did you see that [X] happened last night? Crazy result."
-- "Apparently everyone's going crazy about [Y] right now."
-- "I heard [Z] just dropped — people are losing their minds."
+Give her ready-to-use one-liners she can say at the coffee machine. Each item must be ONE short sentence — punchy, casual, copy-paste ready.
 
-Output format:
-- Use casual section headers (emoji + bold label)
-- 3–5 items per section
-- Each item: one punchy sentence that sounds natural in conversation
-- End with a **WILDCARD** section — one weird/viral/unexpected thing that's trending
+Format rules:
+- Section header: emoji + bold label on its own line
+- 2–3 items per section, each on its own line starting with •
+- No sub-bullets, no elaboration, no extra context
+- End with one **🎲 WILDCARD** item
 
-Tone: friendly, slightly cheeky, like a mate giving you a quick briefing before a meeting.
-Keep it light and fun. No bullet-point news anchor vibes."""
+Tone: cheeky mate giving a 30-second briefing. Keep it tight."""
 
 USER_PROMPT = """Search the web for what men in Copenhagen, Denmark are talking about RIGHT NOW (today is {today}).
 
