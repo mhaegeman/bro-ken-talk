@@ -57,7 +57,7 @@ Give her ready-to-use one-liners she can say at the coffee machine. Each item mu
 
 Format rules:
 - Section header: emoji + bold label on its own line
-- 2–3 items per section, each on its own line starting with •
+- Up to 5 items per section, each on its own line starting with •
 - No sub-bullets, no elaboration, no extra context
 - End with one **🎲 WILDCARD** item
 
